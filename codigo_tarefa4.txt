@@ -1,0 +1,48 @@
+devtools::install_github("ipeaGIT/geobr", subdir = "r-package")
+install.packages("xlsx")
+library(geobr)
+library(terra, spData)
+library(spDataLarge)
+library(tiff)
+library(raster)
+library(sf)
+library(writexl)
+library(ggplot2)
+library(viridis)
+library(xlsx)
+##
+raster_filepath = "brasil_coverage_2020.tif"
+my_rast = rast(raster_filepath)
+plot(my_rast)
+mun_sp <-read_municipality(code_muni= "SP", year=2020)
+mun_vec = vect(mun_sp)
+srtm_cropped = crop(my_rast, mun_vec)
+srtm_final = mask(srtm_cropped, mun_vec)
+extraction = terra::extract(my_rast, mun_vec)
+##
+pixels_total = extraction %>%
+  group_by(ID) %>%
+  summarise(n_pixels = n())
+forest_mun = extraction %>%
+  group_by(ID) %>%
+  filter(brasil_coverage_2020 %in% c(3,4,5,49)) %>%
+  summarise(n_forest = n())
+mun_sp = mun_sp %>%
+  mutate(ID=1:645) %>%
+  left_join(pixels_total, by = "ID")
+mun_sp = mun_sp %>%
+  mutate(ID=1:645) %>%
+  left_join(forest_mun, by = "ID")
+mun_sp = mun_sp %>%
+  mutate(cobertura = n_forest/n_pixels)
+###
+png("Grafico.png")
+ggplot(mun_sp) +
+  geom_sf(aes(fill=cobertura)) +
+  scale_fill_viridis_c(name = "Cobertura Vegetal") + 
+  ggtitle("Cobertura Vegetal Estado de São Paulo (%)")
+dev.off()
+####
+sp_cobertura = mun_sp %>%
+  select(name_muni, cobertura)
+write.csv(sp_cobertura, file="cobertura.csv")
