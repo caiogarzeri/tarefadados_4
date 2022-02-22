@@ -1,5 +1,6 @@
 # tarefadados_4
 
-Calculei cobertura vegetal dos municípios do Estado de São Paulo. 
+Calculei cobertura vegetal dos municípios do Estado de São Paulo, o que responde a primeira pergunta proposta na tarefa. 
 
-Incluí: (i) código, (ii) mapa do Estado com cobertura por município (iii) tabela com 15 municípios de maior cobertura vegetal, (iv) CSV com cobertura vegetal de todos os municípios de São Paulo.  
+Para os 15 municípios com maior cobertura vegetal, preparei uma tabela. O resultado com todos os municípios foi exportado também para um CSV. Também adicionei um mapa com o resultado, além do código. 
+
